@@ -1,0 +1,49 @@
+micronaut:
+  application:
+    name: flagpole
+  router:
+    static-resources:
+      default:
+        enabled: true
+        paths: classpath:public
+        mapping: /static/**
+      # Generated at compile time by micronaut-openapi.
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  server:
+    netty:
+      access-logger:
+        enabled: ${ACCESS_LOG_ENABLED:true}
+        # Probes and static assets would drown out real traffic.
+        exclusions:
+          - /health.*
+          - /static/.*
+          - /swagger-ui/.*
+    cors:
+      # Only for browser apps on other origins that call the API directly. Off unless origins are listed:
+      # with no configuration Micronaut would allow any origin, with credentials.
+      enabled: true
+      configurations:
+        api:
+          # Comma-separated exact origins, e.g. https://app.example.com,https://admin.example.com
+          allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+          allowed-methods: [GET, HEAD]
+          allowed-headers: [If-None-Match]
+          exposed-headers: [ETag]
+          allow-credentials: false
+
+flags:
+  # Path to the flags YAML file. Usually set via the FLAGS_FILE environment variable.
+  file: ${FLAGS_FILE:}
+  # How often to check the file for changes (FLAGS_RELOAD_INTERVAL).
+  reload-interval: 5s
+
+endpoints:
+  health:
+    enabled: true
+    sensitive: false
+    details-visible: ANONYMOUS

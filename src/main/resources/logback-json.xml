@@ -1,0 +1,13 @@
+<included>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.JsonEncoder">
+            <withSequenceNumber>false</withSequenceNumber>
+            <withNanoseconds>false</withNanoseconds>
+            <withContext>false</withContext>
+            <!-- The formatted message only, not the raw "{}" pattern plus its arguments. -->
+            <withMessage>false</withMessage>
+            <withArguments>false</withArguments>
+            <withFormattedMessage>true</withFormattedMessage>
+        </encoder>
+    </appender>
+</included>

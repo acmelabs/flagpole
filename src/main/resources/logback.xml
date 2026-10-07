@@ -1,0 +1,14 @@
+<configuration>
+    <!-- LOG_FORMAT picks logback-<format>.xml: text (default) or json (one JSON object per line, for log
+         collectors). Each defines the STDOUT appender. -->
+    <!-- Silence logback's own status output: on any warning it dumps its whole startup log, and the native image
+         always warns that the logback version is unknown, which breaks JSON-only output. Application.main
+         rejects an unknown LOG_FORMAT, the one misconfiguration this would otherwise hide. -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
+    <include resource="logback-${LOG_FORMAT:-text}.xml"/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

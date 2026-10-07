@@ -1,0 +1,16 @@
+<div xmlns:th="http://www.thymeleaf.org">
+    <p class="muted" th:if="${anonymous}">No userId given: evaluated as an anonymous request.</p>
+    <p th:unless="${anonymous}">Results for <code th:text="${userId}">user</code></p>
+    <table>
+        <thead>
+        <tr><th>Flag</th><th>Result</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${rows}">
+            <td><code th:text="${row.name}">name</code></td>
+            <td><span th:class="${row.enabled} ? 'pill on' : 'pill off'" th:text="${row.enabled}">true</span></td>
+            <td class="muted" th:text="${row.reason}">reason</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

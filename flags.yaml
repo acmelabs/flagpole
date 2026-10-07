@@ -1,0 +1,18 @@
+# Feature flags for one environment. Change via pull request; the service reloads within ~5s.
+flags:
+  new-checkout:
+    enabled: true
+    rollout: 25
+    allow: [user_42, qa_tester]
+    description: "New checkout flow"
+  dark-mode:
+    enabled: false
+    description: "Dark theme for the web app"
+  search.v2:
+    enabled: true
+    description: "Rewritten search backend, fully rolled out"
+  beta_reports:
+    enabled: true
+    rollout: 0
+    allow: [user_7]
+    description: "Reports beta, allow list only"

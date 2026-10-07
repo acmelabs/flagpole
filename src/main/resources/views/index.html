@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flagpole</title>
+    <link rel="stylesheet" href="/static/app.css">
+    <script src="/static/htmx.min.js" defer></script>
+</head>
+<body>
+<header>
+    <h1>Flagpole</h1>
+    <dl class="meta">
+        <dt>Version</dt>
+        <dd><code th:title="${version}" th:text="${shortVersion}">abc123</code></dd>
+        <dt>Last reload</dt>
+        <dd th:text="${loadedAt}">2026-01-01 00:00:00 UTC</dd>
+    </dl>
+</header>
+
+<main>
+    <p class="error" th:if="${hasReloadError}">
+        Latest reload failed; still serving the version above.
+        <span th:text="${reloadError}"></span>
+    </p>
+
+    <section>
+        <h2>Flags</h2>
+        <table>
+            <thead>
+            <tr><th>Name</th><th>Enabled</th><th class="num">Rollout</th><th class="num">Allow list</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="flag : ${flags}">
+                <td><code th:text="${flag.name}">name</code></td>
+                <td><span th:class="${flag.enabled} ? 'pill on' : 'pill off'" th:text="${flag.enabled} ? 'on' : 'off'">on</span></td>
+                <td class="num" th:text="${flag.rollout} + '%'">100%</td>
+                <td class="num">
+                    <details class="allow" th:if="${flag.hasAllow}">
+                        <summary th:text="${flag.allowCount} + (${flag.allowCount} == 1 ? ' user' : ' users')"
+                                 th:title="'Show allow list for ' + ${flag.name}">2 users</summary>
+                        <ul><li th:each="userId : ${flag.allow}"><code th:text="${userId}">user_42</code></li></ul>
+                    </details>
+                    <span class="muted" th:unless="${flag.hasAllow}">0</span>
+                </td>
+                <td th:text="${flag.description}">description</td>
+            </tr>
+            <tr th:if="${noFlags}"><td colspan="5" class="muted">No flags defined.</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Test a user</h2>
+        <form hx-get="/ui/evaluate" hx-target="#evaluation"
+              hx-trigger="submit, input changed delay:300ms from:#userId">
+            <input id="userId" name="userId" type="text" placeholder="userId, e.g. user_42" autocomplete="off">
+            <button type="submit">Evaluate</button>
+        </form>
+        <div id="evaluation"></div>
+    </section>
+</main>
+
+<footer class="muted">
+    Read-only. Change flags with a pull request to the flags file.
+    · <a href="/swagger-ui">API docs</a>
+    · <a href="/swagger/flagpole.yml">OpenAPI spec</a>
+</footer>
+</body>
+</html>
