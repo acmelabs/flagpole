@@ -262,3 +262,10 @@ src/main/resources/public     htmx.min.js, app.css
 src/test/groovy               Spock specs
 openapi.properties            OpenAPI / Swagger UI generation settings
 ```
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
+
+`src/main/resources/public/htmx.min.js` is [htmx](https://htmx.org), bundled under its own
+license (Zero-Clause BSD).
