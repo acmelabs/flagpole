@@ -1,5 +1,7 @@
 # flagpole
 
+[![CI](https://github.com/acmelabs/flagpole/actions/workflows/ci.yml/badge.svg)](https://github.com/acmelabs/flagpole/actions/workflows/ci.yml)
+
 A lightweight, read-only feature flag service. Flags live in a single YAML file, are changed through pull
 requests, and are served over a small JSON API plus a read-only web UI.
 
@@ -161,6 +163,21 @@ There is no editing in the UI. Change flags with a pull request to the flags fil
 
 ## Docker
 
+Prebuilt native images for `linux/amd64` and `linux/arm64` are published to the GitHub Container Registry:
+
+```bash
+docker run -p 8080:8080 -v "$PWD/flags.yaml:/config/flags.yaml:ro" ghcr.io/acmelabs/flagpole:latest
+```
+
+| Tag             | Built from                         |
+|-----------------|------------------------------------|
+| `latest`        | the newest `v*` release tag        |
+| `1.2.3`, `1.2`  | release tag `v1.2.3`               |
+| `main`          | the latest commit on `main`        |
+| `sha-<commit>`  | that commit (on `main` or a tag)   |
+
+To build locally:
+
 ```bash
 docker build -t flagpole .                         # native image (GraalVM, distroless runtime)
 docker build -f Dockerfile.jvm -t flagpole:jvm .   # JVM fallback
@@ -169,6 +186,22 @@ docker run -p 8080:8080 -v "$PWD/flags.yaml:/config/flags.yaml:ro" flagpole
 ```
 
 Both images default `FLAGS_FILE` to `/config/flags.yaml` and `LOG_FORMAT` to `json`.
+
+## CI and releases
+
+`.github/workflows/ci.yml` runs on every push and pull request:
+
+1. **Build and test**: `./gradlew build` on JDK 21. The test report is uploaded as an artifact if it fails.
+2. **Docker image**: builds the native image for `linux/amd64` and `linux/arm64` in parallel, each on a runner
+   of that architecture (native-image can't cross-compile). Pull requests only build them.
+3. **Publish** (pushes to `main` and `v*` tags only): combines both into one multi-arch tag on
+   `ghcr.io/acmelabs/flagpole`, so `docker pull` picks the right architecture automatically.
+
+To release, bump `version` in `build.gradle.kts`, merge, then tag that commit:
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
 
 ## Deploying one instance per environment
 
@@ -213,7 +246,7 @@ spec:
     spec:
       containers:
         - name: flagpole
-          image: registry.example.com/flagpole:0.1.0
+          image: ghcr.io/acmelabs/flagpole:0.1.0
           env:
             - name: FLAGS_FILE
               value: /config/flags.yaml
